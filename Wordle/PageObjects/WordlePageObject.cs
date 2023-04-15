@@ -23,12 +23,27 @@ namespace Wordle.Specs.PageObjects
             _webDriver = webDriver;
         }
 
+        //Finding elements
+        private IWebElement GDPRelement => _webDriver.FindElement(By.Id("pz-gdpr-btn-closex"));
+        private IWebElement HowToPlayElement => _webDriver.FindElement(By.XPath("//button[contains(@aria-label, 'Close')]"));
+        public IWebElement KeyboardElement => _webDriver.FindElement(By.XPath("//div[contains(@aria-label, 'Keyboard')]"));
+
         //Finding elements by ID
         private IWebElement FirstNumberElement => _webDriver.FindElement(By.Id("first-number"));
         private IWebElement SecondNumberElement => _webDriver.FindElement(By.Id("second-number"));
         private IWebElement AddButtonElement => _webDriver.FindElement(By.Id("add-button"));
         private IWebElement ResultElement => _webDriver.FindElement(By.Id("result"));
         private IWebElement ResetButtonElement => _webDriver.FindElement(By.Id("reset-button"));
+
+        public void ClickGDPR()
+        {
+            GDPRelement.Click();
+        }
+
+        public void ClickHowToPlay()
+        {
+            HowToPlayElement.Click();
+        }
 
         public void EnterFirstNumber(string number)
         {

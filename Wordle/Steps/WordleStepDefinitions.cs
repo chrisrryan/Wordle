@@ -44,11 +44,14 @@ namespace Wordle.Specs.Steps
         public void GivenBoardReset()
         {
 
+
             foreach (var word in _allWords)
             {
                 Console.WriteLine(word);
             };
-            throw new PendingStepException();
+
+            _wordlePageObject.ClickGDPR();
+            _wordlePageObject.ClickHowToPlay();
         }
     }
 }
