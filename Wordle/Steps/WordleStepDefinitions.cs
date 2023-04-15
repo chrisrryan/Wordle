@@ -31,7 +31,7 @@ namespace Wordle.Specs.Steps
         [Given(@"the word list is loaded")]
         public void GivenTheWordListIsLoaded()
         {
-            var fileStream = new FileStream(".\\Data\\Words.txt", FileMode.Open, FileAccess.Read);
+            var fileStream = new FileStream("Data/Words.txt", FileMode.Open, FileAccess.Read);
 
             using (var reader = new StreamReader(fileStream))
             {
