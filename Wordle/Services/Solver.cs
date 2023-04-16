@@ -11,7 +11,6 @@ public class Solver
     public int attempts { get; set; }
 
     private List<string> _allWords;
-    private List<char> mustHaveLetters;
     private string[] possibles = new string[5];
     private Random random = new Random();
     private string latestWord;
