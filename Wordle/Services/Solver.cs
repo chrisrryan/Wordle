@@ -1,6 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace Tester
+namespace Wordle.Specs.Services
 {
     public class Solver
     {
@@ -9,7 +13,6 @@ namespace Tester
         private List<string> _allWords;
         private List<char> mustHaveLetters;
         private string[] possibles = new string[5];
-        private Predicate<string> distinctLettersFilter;
         private Random random = new Random();
         private string latestWord;
 
