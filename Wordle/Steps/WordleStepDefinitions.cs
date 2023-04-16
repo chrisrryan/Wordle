@@ -6,6 +6,7 @@ using Wordle.Specs.Drivers;
 using Wordle.Specs.PageObjects;
 using System.Collections.Generic;
 using System.Linq;
+using Wordle.Specs.Services;
 
 namespace Wordle.Specs.Steps
 {
@@ -15,6 +16,7 @@ namespace Wordle.Specs.Steps
         //Page Object for Wordle
         private readonly WordlePageObject _wordlePageObject;
         private List<string> _allWords;
+        private Solver solver;
 
         public WordleStepDefinitions(BrowserDriver browserDriver)
         {
@@ -26,32 +28,26 @@ namespace Wordle.Specs.Steps
         public void GivenTheWordleHomePageIsDisplayed()
         {
             _wordlePageObject.EnsureWordleIsOpenAndReset();
-        }
-
-        [Given(@"the word list is loaded")]
-        public void GivenTheWordListIsLoaded()
-        {
-            var fileStream = new FileStream("Data/Words.txt", FileMode.Open, FileAccess.Read);
-
-            using (var reader = new StreamReader(fileStream))
-            {
-                var wordString = reader.ReadToEnd();
-                _allWords = wordString.Split(new[] { '\n' }, StringSplitOptions.None).ToList();
-            }
-        }
-
-        [Given(@"board reset")]
-        public void GivenBoardReset()
-        {
-
-
-            foreach (var word in _allWords)
-            {
-                Console.WriteLine(word);
-            };
-
             _wordlePageObject.ClickGDPR();
             _wordlePageObject.ClickHowToPlay();
+        }
+
+        [Given(@"make attempts")]
+        public void GivenBoardReset()
+        {
+            Solver solver = new Solver();
+
+            var attempt = 0;
+            bool done = false;
+
+            while (!done)
+            {
+                var word = solver.getWord();
+                attempt++;
+                _wordlePageObject.enterWord(word);
+                string[] evaluation =_wordlePageObject.wordEvaluation(attempt);
+                done = solver.processEvaluation(evaluation) || attempt == 6;
+            }
         }
     }
 }

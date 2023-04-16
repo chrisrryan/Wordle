@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using Wordle.Specs.Services;
 
 namespace Wordle.Specs.PageObjects
 {
@@ -28,6 +29,7 @@ namespace Wordle.Specs.PageObjects
         private IWebElement HowToPlayElement => _webDriver.FindElement(By.XPath("//button[contains(@aria-label, 'Close')]"));
         public IWebElement KeyboardElement => _webDriver.FindElement(By.XPath("//div[contains(@aria-label, 'Keyboard')]"));
 
+
         //Finding elements by ID
         private IWebElement FirstNumberElement => _webDriver.FindElement(By.Id("first-number"));
         private IWebElement SecondNumberElement => _webDriver.FindElement(By.Id("second-number"));
@@ -43,6 +45,37 @@ namespace Wordle.Specs.PageObjects
         public void ClickHowToPlay()
         {
             HowToPlayElement.Click();
+        }
+
+        public bool enterWord(string word)
+        {
+            for (int i = 0; i < 5; i++) clickLetter(word[i]);
+            clickLetter('↵'); // Enter key
+            
+            // Wordle doesn't reveal word results immediately. Give it time to do its thing.
+            System.Threading.Thread.Sleep(2000);
+            return true;
+        }
+
+        private void clickLetter(char letter)
+        {
+            KeyboardElement.FindElement(By.CssSelector(String.Format("button[data-key='{0}']", letter))).Click();
+        }
+
+
+        public string[] wordEvaluation(int attempt)
+        {
+            String[] evaluation = new String[5];
+            for (int i = 0; i < 5; i++)
+                evaluation[i] = letterEvaluation(attempt, i + 1);
+            return evaluation;
+        }
+
+        private String letterEvaluation(int rowIndex, int tileIndex)
+        {
+            String tileXPath = "//div[contains(@aria-label, 'Row " + rowIndex + "')]/div[" + tileIndex + "]/div";
+            IWebElement tile = _webDriver.FindElement(By.XPath(tileXPath));
+            return tile.GetDomAttribute("data-state");
         }
 
         public void EnterFirstNumber(string number)

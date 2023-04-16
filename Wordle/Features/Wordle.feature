@@ -3,8 +3,7 @@ Feature: Wordle
     
     Scenario: Solve Wordle
         Given the Wordle home page is displayed
-        And the word list is loaded
-        And board reset
+        And make attempts
         
         
         #When the two numbers are added
