@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,12 +7,11 @@ using System.Text.RegularExpressions;
 namespace Wordle.Specs.Services;
 public class Solver
 {
-    public int attempts { get; set; }
-
+    private int _attempts;
     private List<string> _allWords;
-    private string[] possibles = new string[5];
+    private string[] _possibles = new string[5];
     private Random random = new Random();
-    private string latestWord;
+    private string _latestWord;
 
     public Solver()
     {
@@ -24,16 +22,23 @@ public class Solver
             var wordString = reader.ReadToEnd();
             _allWords = wordString.Split(new[] { '\n' }, StringSplitOptions.None).ToList();
         }
-
-        possibles = Array.ConvertAll(possibles, p => "abcdefghijklmnopqrstuvwxyz");
+        //Of each of the five letters, _possibles defines what letters could be in that position.
+        //As feedback from Wordle comes in, possibles for each letter position are removed.
+        _possibles = Array.ConvertAll(_possibles, p => "abcdefghijklmnopqrstuvwxyz");
     }
 
-    public bool processEvaluation(String[] evaluation)
+    public bool ProcessEvaluation(String[] evaluation)
     {
-        bool done = evaluation.All(x => x == "correct") || attempts == 6;
+        /*From Wordle's colour coding - Page Objects supplies the as the evaluation array :
+         Green (correct) - right letter in right position
+         Yellow (present) - letter is present in word but not in that position
+         Grey (absent) - the letter is not present in the word
+         */
+        
+        var done = evaluation.All(x => x == "correct") || _attempts == 6;
         if (!done)
         {
-            char[] letters = latestWord.ToCharArray();
+            var letters = _latestWord.ToCharArray();
             for (int i = 0; i < 5; i++)
             {
                 switch (evaluation[i])
@@ -42,7 +47,7 @@ public class Solver
                         // Duplicate letter one present/correct and one absent.
                         bool repeatingLetterTooMany = false;
                         //Is this letter repeated in the word?
-                        if (latestWord.Count(x => x == letters[i]) >= 2)
+                        if (_latestWord.Count(x => x == letters[i]) >= 2)
                         {
                             // If so, check if any are flagged as present or correct.
                             for (int j = 0; j < 5; j++)
@@ -53,20 +58,20 @@ public class Solver
                         }
                         if (repeatingLetterTooMany)
                         {
-                            removeLetterFromColumn(letters[i], i);
+                            RemoveLetterFromColumn(letters[i], i);
                         }
                         else
                         {
-                            removeLetterFromAll(letters[i]);
+                            RemoveLetterFromAll(letters[i]);
                         }
                         break;
                     case "present":
-                        mustHaveLetter(letters[i]);
-                        removeLetterFromColumn(letters[i], i);
+                        MustHaveLetter(letters[i]);
+                        RemoveLetterFromColumn(letters[i], i);
                         break;
                     case "correct":
-                        mustHaveLetter(letters[i]);
-                        setLetterAsFound(letters[i], i);
+                        MustHaveLetter(letters[i]);
+                        SetLetterAsFound(letters[i], i);
                         break;
                 }
             }
@@ -74,52 +79,51 @@ public class Solver
         return done;
     }
 
-    public void setLetterAsFound(char letter, int index)
+    public void SetLetterAsFound(char letter, int index)
     {
-        possibles[index] = letter.ToString();
+        _possibles[index] = letter.ToString();
     }
 
-    public void removeLetterFromAll(char letter)
+    private void RemoveLetterFromAll(char letter)
     {
         for (int i = 0; i < 5; i++)
         {
-            removeLetterFromColumn(letter, i);
+            RemoveLetterFromColumn(letter, i);
         }
     }
 
-    public void removeLetterFromColumn(char letter, int index)
+    private void RemoveLetterFromColumn(char letter, int index)
     {
-        possibles[index] = possibles[index].Replace(letter.ToString(), "");
+        _possibles[index] = _possibles[index].Replace(letter.ToString(), "");
     }
 
-    public void mustHaveLetter(char letter)
+    private void MustHaveLetter(char letter)
     {
         _allWords = _allWords.Where(w => w.Contains(letter)).ToList();
     }
 
-    public String getWord()
+    public string GetWord()
     {
-        attempts++;
+        _attempts++;
 
-        if (attempts ==  1)
-            latestWord = "raise";  //Reasonable first guess?
+        if (_attempts ==  1)
+            _latestWord = "stare";  //Reasonable first guess?
         else
         {
-            foreach (var item in _allWords)
-            {
-                Debug.WriteLine(item.ToString());
-            }
-
+            //Use the possibles letter array to build a regular expression with which to then remove words which aren't 
+            //potential solutions.
             var viableRegEx = ""; 
             for (int i = 0; i < 5; i++)
-                viableRegEx += '[' + possibles[i] + ']';
+                viableRegEx += '[' + _possibles[i] + ']';
 
+            //Using LINQ to filter the possible words using the regular expression above.
             var wordFilter = new Regex(viableRegEx);
             _allWords = _allWords.Where(f => wordFilter.IsMatch(f)).ToList();
-
-            latestWord = _allWords[random.Next(_allWords.Count)];
+            
+            //From the remaining list select a word at random.
+            //This could be improved with Information Theory. 
+            _latestWord = _allWords[random.Next(_allWords.Count)];
         }
-
-        return latestWord;
+        return _latestWord;
     }
 }

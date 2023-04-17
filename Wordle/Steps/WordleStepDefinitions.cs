@@ -12,8 +12,8 @@ public sealed class WordleStepDefinitions
 {
     //Page Object for Wordle
     private readonly WordlePageObject _wordlePageObject;
-    private int attempt = 0;
-    private bool done = false;
+    private int _attempt = 0;
+    private bool _done = false;
 
     public WordleStepDefinitions(BrowserDriver browserDriver)
     {
@@ -24,7 +24,7 @@ public sealed class WordleStepDefinitions
     public void GivenTheWordleHomePageIsDisplayed()
     {
         _wordlePageObject.EnsureWordleIsOpenAndReset();
-        _wordlePageObject.ClickGDPR();
+        _wordlePageObject.ClickGdpr();
         _wordlePageObject.ClickHowToPlay();
     }
 
@@ -32,22 +32,21 @@ public sealed class WordleStepDefinitions
     public void WhenUpToSixWordsAttempted()
     {
         Solver solver = new Solver();
-        while (!done)
+        while (!_done)
         {
-            var word = solver.getWord();
-            attempt++;
-            _wordlePageObject.enterWord(word);
-            string[] evaluation =_wordlePageObject.wordEvaluation(attempt);
-            done = solver.processEvaluation(evaluation) || attempt == 6;
+            var word = solver.GetWord();
+            _attempt++;
+            _wordlePageObject.EnterWord(word);
+            string[] evaluation =_wordlePageObject.WordEvaluation(_attempt);
+            _done = solver.ProcessEvaluation(evaluation) || _attempt == 6;
         }
     }
 
     [Then(@"correct word found")]
     public void ThenCorrectWordFound()
     {
-        Assert.IsTrue(done);
-        Assert.LessOrEqual(attempt, 6);
-        Thread.Sleep(60000);  //Allow time to view reult
+        Assert.IsTrue(_done);
+        Assert.LessOrEqual(_attempt, 6);
+        Thread.Sleep(60000);  //Allow time to view result
     }
-
 }

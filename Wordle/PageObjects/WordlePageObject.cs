@@ -17,7 +17,7 @@ public class WordlePageObject
     private readonly IWebDriver _webDriver;
         
     //The default wait time in seconds for wait.Until
-    public const int DefaultWaitInSeconds = 5;
+    private const int DefaultWaitInSeconds = 5;
 
     public WordlePageObject(IWebDriver webDriver)
     {
@@ -25,21 +25,17 @@ public class WordlePageObject
     }
 
     //Finding elements
-    private IWebElement GDPRelement => _webDriver.FindElement(By.Id("pz-gdpr-btn-closex"));
+    private IWebElement GdprElement => _webDriver.FindElement(By.Id("pz-gdpr-btn-closex"));
     private IWebElement HowToPlayElement => _webDriver.FindElement(By.XPath("//button[contains(@aria-label, 'Close')]"));
-    public IWebElement KeyboardElement => _webDriver.FindElement(By.XPath("//div[contains(@aria-label, 'Keyboard')]"));
-
-
+    private IWebElement KeyboardElement => _webDriver.FindElement(By.XPath("//div[contains(@aria-label, 'Keyboard')]"));
+    
     //Finding elements by ID
-    private IWebElement FirstNumberElement => _webDriver.FindElement(By.Id("first-number"));
-    private IWebElement SecondNumberElement => _webDriver.FindElement(By.Id("second-number"));
-    private IWebElement AddButtonElement => _webDriver.FindElement(By.Id("add-button"));
     private IWebElement ResultElement => _webDriver.FindElement(By.Id("result"));
     private IWebElement ResetButtonElement => _webDriver.FindElement(By.Id("reset-button"));
 
-    public void ClickGDPR()
+    public void ClickGdpr()
     {
-        GDPRelement.Click();
+        GdprElement.Click();
     }
 
     public void ClickHowToPlay()
@@ -47,33 +43,33 @@ public class WordlePageObject
         HowToPlayElement.Click();
     }
 
-    public bool enterWord(string word)
+    public bool EnterWord(string word)
     {
-        for (int i = 0; i < 5; i++) clickLetter(word[i]);
-        clickLetter('↵'); // Enter key
+        for (int i = 0; i < 5; i++) ClickLetter(word[i]);
+        ClickLetter('↵'); // Enter key
             
         // Wordle doesn't reveal word results immediately. Give it time to do its thing.
         Thread.Sleep(2000);
         return true;
     }
 
-    private void clickLetter(char letter)
+    private void ClickLetter(char letter)
     {
         KeyboardElement.FindElement(By.CssSelector(String.Format("button[data-key='{0}']", letter))).Click();
     }
 
-    public string[] wordEvaluation(int attempt)
+    public string[] WordEvaluation(int attempt)
     {
-        String[] evaluation = new String[5];
+        var evaluation = new String[5];
         for (int i = 0; i < 5; i++)
-            evaluation[i] = letterEvaluation(attempt, i + 1);
+            evaluation[i] = LetterEvaluation(attempt, i + 1);
         return evaluation;
     }
 
-    private String letterEvaluation(int rowIndex, int tileIndex)
+    private string LetterEvaluation(int rowIndex, int tileIndex)
     {
-        String tileXPath = "//div[contains(@aria-label, 'Row " + rowIndex + "')]/div[" + tileIndex + "]/div";
-        IWebElement tile = _webDriver.FindElement(By.XPath(tileXPath));
+        var tileXPath = "//div[contains(@aria-label, 'Row " + rowIndex + "')]/div[" + tileIndex + "]/div";
+        var tile = _webDriver.FindElement(By.XPath(tileXPath));
         return tile.GetDomAttribute("data-state");
     }
 
@@ -129,6 +125,5 @@ public class WordlePageObject
 
             return result;
         });
-
     }
 }
