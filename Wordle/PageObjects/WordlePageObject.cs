@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
@@ -52,7 +53,7 @@ public class WordlePageObject
         clickLetter('↵'); // Enter key
             
         // Wordle doesn't reveal word results immediately. Give it time to do its thing.
-        System.Threading.Thread.Sleep(2000);
+        Thread.Sleep(2000);
         return true;
     }
 
@@ -60,7 +61,6 @@ public class WordlePageObject
     {
         KeyboardElement.FindElement(By.CssSelector(String.Format("button[data-key='{0}']", letter))).Click();
     }
-
 
     public string[] wordEvaluation(int attempt)
     {
@@ -75,28 +75,6 @@ public class WordlePageObject
         String tileXPath = "//div[contains(@aria-label, 'Row " + rowIndex + "')]/div[" + tileIndex + "]/div";
         IWebElement tile = _webDriver.FindElement(By.XPath(tileXPath));
         return tile.GetDomAttribute("data-state");
-    }
-
-    public void EnterFirstNumber(string number)
-    {
-        //Clear text box
-        FirstNumberElement.Clear();
-        //Enter text
-        FirstNumberElement.SendKeys(number);
-    }
-
-    public void EnterSecondNumber(string number)
-    {
-        //Clear text box
-        SecondNumberElement.Clear();
-        //Enter text
-        SecondNumberElement.SendKeys(number);
-    }
-
-    public void ClickAdd()
-    {
-        //Click the add button
-        AddButtonElement.Click();
     }
 
     public void EnsureWordleIsOpenAndReset()

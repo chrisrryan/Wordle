@@ -1,12 +1,9 @@
-﻿using FluentAssertions;
-using System.IO;
-using System;
-using TechTalk.SpecFlow;
+﻿using TechTalk.SpecFlow;
 using Wordle.Specs.Drivers;
 using Wordle.Specs.PageObjects;
-using System.Collections.Generic;
-using System.Linq;
 using Wordle.Specs.Services;
+using System.Threading;
+using NUnit.Framework;
 
 namespace Wordle.Specs.Steps;
 
@@ -15,6 +12,8 @@ public sealed class WordleStepDefinitions
 {
     //Page Object for Wordle
     private readonly WordlePageObject _wordlePageObject;
+    private int attempt = 0;
+    private bool done = false;
 
     public WordleStepDefinitions(BrowserDriver browserDriver)
     {
@@ -29,13 +28,10 @@ public sealed class WordleStepDefinitions
         _wordlePageObject.ClickHowToPlay();
     }
 
-    [Given(@"make attempts")]
-    public void GivenBoardReset()
+    [When(@"up to six words attempted")]
+    public void WhenUpToSixWordsAttempted()
     {
         Solver solver = new Solver();
-        var attempt = 0;
-        var done = false;
-
         while (!done)
         {
             var word = solver.getWord();
@@ -45,4 +41,13 @@ public sealed class WordleStepDefinitions
             done = solver.processEvaluation(evaluation) || attempt == 6;
         }
     }
+
+    [Then(@"correct word found")]
+    public void ThenCorrectWordFound()
+    {
+        Assert.IsTrue(done);
+        Assert.LessOrEqual(attempt, 6);
+        Thread.Sleep(60000);  //Allow time to view reult
+    }
+
 }

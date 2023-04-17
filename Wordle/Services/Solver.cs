@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Wordle.Specs.Services;
-
 public class Solver
 {
     public int attempts { get; set; }
@@ -101,22 +101,25 @@ public class Solver
     {
         attempts++;
 
-        switch (attempts)
+        if (attempts ==  1)
+            latestWord = "raise";  //Reasonable first guess?
+        else
         {
-            case 1:
-                latestWord = "adieu";
-                break;
-            default:
-                String viableRegEx = "";
-                for (int i = 0; i < 5; i++)
-                    viableRegEx += '[' + possibles[i] + ']';
+            foreach (var item in _allWords)
+            {
+                Debug.WriteLine(item.ToString());
+            }
 
-                var wordFilter = new Regex(viableRegEx);
-                _allWords = _allWords.Where(f => wordFilter.IsMatch(f)).ToList();
+            var viableRegEx = ""; 
+            for (int i = 0; i < 5; i++)
+                viableRegEx += '[' + possibles[i] + ']';
 
-                latestWord = _allWords[random.Next(_allWords.Count)];
-                break;
+            var wordFilter = new Regex(viableRegEx);
+            _allWords = _allWords.Where(f => wordFilter.IsMatch(f)).ToList();
+
+            latestWord = _allWords[random.Next(_allWords.Count)];
         }
+
         return latestWord;
     }
 }
