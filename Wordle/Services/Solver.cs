@@ -9,10 +9,9 @@ public class Solver
 {
     private int _attempts;
     private List<string> _allWords;
-    private string[] _possibles = new string[5];
-    private Random random = new Random();
+    private readonly string[] _possibles = new string[5];
+    private readonly Random _random;
     private string _latestWord;
-
     public Solver()
     {
         // Import the Wordle words list
@@ -25,8 +24,8 @@ public class Solver
         //Of each of the five letters, _possibles defines what letters could be in that position.
         //As feedback from Wordle comes in, possibles for each letter position are removed.
         _possibles = Array.ConvertAll(_possibles, p => "abcdefghijklmnopqrstuvwxyz");
+        _random = new Random();
     }
-
     public bool ProcessEvaluation(String[] evaluation)
     {
         /*From Wordle's colour coding - Page Objects supplies the as the evaluation array :
@@ -34,7 +33,6 @@ public class Solver
          Yellow (present) - letter is present in word but not in that position
          Grey (absent) - the letter is not present in the word
          */
-        
         var done = evaluation.All(x => x == "correct") || _attempts == 6;
         if (!done)
         {
@@ -78,12 +76,10 @@ public class Solver
         }
         return done;
     }
-
-    public void SetLetterAsFound(char letter, int index)
+    private void SetLetterAsFound(char letter, int index)
     {
         _possibles[index] = letter.ToString();
     }
-
     private void RemoveLetterFromAll(char letter)
     {
         for (int i = 0; i < 5; i++)
@@ -91,17 +87,14 @@ public class Solver
             RemoveLetterFromColumn(letter, i);
         }
     }
-
     private void RemoveLetterFromColumn(char letter, int index)
     {
         _possibles[index] = _possibles[index].Replace(letter.ToString(), "");
     }
-
     private void MustHaveLetter(char letter)
     {
         _allWords = _allWords.Where(w => w.Contains(letter)).ToList();
     }
-
     public string GetWord()
     {
         _attempts++;
@@ -122,7 +115,7 @@ public class Solver
             
             //From the remaining list select a word at random.
             //This could be improved with Information Theory. 
-            _latestWord = _allWords[random.Next(_allWords.Count)];
+            _latestWord = _allWords[_random.Next(_allWords.Count)];
         }
         return _latestWord;
     }

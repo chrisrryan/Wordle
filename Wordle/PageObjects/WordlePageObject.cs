@@ -28,21 +28,17 @@ public class WordlePageObject
     private IWebElement GdprElement => _webDriver.FindElement(By.Id("pz-gdpr-btn-closex"));
     private IWebElement HowToPlayElement => _webDriver.FindElement(By.XPath("//button[contains(@aria-label, 'Close')]"));
     private IWebElement KeyboardElement => _webDriver.FindElement(By.XPath("//div[contains(@aria-label, 'Keyboard')]"));
-    
     //Finding elements by ID
     private IWebElement ResultElement => _webDriver.FindElement(By.Id("result"));
     private IWebElement ResetButtonElement => _webDriver.FindElement(By.Id("reset-button"));
-
     public void ClickGdpr()
     {
         GdprElement.Click();
     }
-
     public void ClickHowToPlay()
     {
         HowToPlayElement.Click();
     }
-
     public bool EnterWord(string word)
     {
         for (int i = 0; i < 5; i++) ClickLetter(word[i]);
@@ -52,12 +48,10 @@ public class WordlePageObject
         Thread.Sleep(2000);
         return true;
     }
-
     private void ClickLetter(char letter)
     {
         KeyboardElement.FindElement(By.CssSelector(String.Format("button[data-key='{0}']", letter))).Click();
     }
-
     public string[] WordEvaluation(int attempt)
     {
         var evaluation = new String[5];
@@ -65,14 +59,12 @@ public class WordlePageObject
             evaluation[i] = LetterEvaluation(attempt, i + 1);
         return evaluation;
     }
-
     private string LetterEvaluation(int rowIndex, int tileIndex)
     {
         var tileXPath = "//div[contains(@aria-label, 'Row " + rowIndex + "')]/div[" + tileIndex + "]/div";
         var tile = _webDriver.FindElement(By.XPath(tileXPath));
         return tile.GetDomAttribute("data-state");
     }
-
     public void EnsureWordleIsOpenAndReset()
     {
         //Open the calculator page in the browser if not opened yet
@@ -85,12 +77,10 @@ public class WordlePageObject
         {
             //Click the rest button
             ResetButtonElement.Click();
-
             //Wait until the result is empty again
             WaitForEmptyResult();
         }
     }
-
     public string WaitForNonEmptyResult()
     {
         //Wait for the result to be not empty
@@ -98,7 +88,6 @@ public class WordlePageObject
             () => ResultElement.GetAttribute("value"),
             result => !string.IsNullOrEmpty(result));
     }
-
     public string WaitForEmptyResult()
     {
         //Wait for the result to be empty
