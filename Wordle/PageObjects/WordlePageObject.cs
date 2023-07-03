@@ -26,7 +26,8 @@ public class WordlePageObject
 
     //Finding elements
     private IWebElement GdprElement => _webDriver.FindElement(By.Id("pz-gdpr-btn-closex"));
-    private IWebElement HowToPlayElement => _webDriver.FindElement(By.XPath("//button[contains(@aria-label, 'Close')]"));
+    private IWebElement HowToPlayElement => _webDriver.FindElement(By.XPath("//button[contains(@data-testid, 'Play')]"));
+    private IWebElement CloseElement => _webDriver.FindElement(By.XPath("//button[contains(@aria-label, 'Close')]"));
     private IWebElement KeyboardElement => _webDriver.FindElement(By.XPath("//div[contains(@aria-label, 'Keyboard')]"));
     //Finding elements by ID
     private IWebElement ResultElement => _webDriver.FindElement(By.Id("result"));
@@ -38,6 +39,10 @@ public class WordlePageObject
     public void ClickHowToPlay()
     {
         HowToPlayElement.Click();
+    }
+    public void ClickClose()
+    {
+        CloseElement.Click();
     }
     public bool EnterWord(string word)
     {

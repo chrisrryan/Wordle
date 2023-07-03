@@ -29,11 +29,11 @@ namespace Wordle.Specs.Drivers
         private IWebDriver CreateWebDriver()
         {
             //We use the Chrome browser
-            var chromeDriverService = ChromeDriverService.CreateDefaultService();
 
             var chromeOptions = new ChromeOptions();
 
-            var chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
+            var chromeDriver = new ChromeDriver(@"C:\Tools", chromeOptions);
+            chromeDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
 
             return chromeDriver;
         }

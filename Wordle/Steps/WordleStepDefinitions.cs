@@ -26,6 +26,7 @@ public sealed class WordleStepDefinitions
         _wordlePageObject.EnsureWordleIsOpenAndReset();
         _wordlePageObject.ClickGdpr();
         _wordlePageObject.ClickHowToPlay();
+        _wordlePageObject.ClickClose();
     }
 
     [When(@"up to six words attempted")]
